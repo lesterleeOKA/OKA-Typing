@@ -1,6 +1,5 @@
 using DG.Tweening;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,17 +7,29 @@ using UnityEngine.UI;
 public class EndGamePage
 {
     public CanvasGroup EndGameLayer;
+    public GameObject[] PlayerIcons;
     public Image messageBg;
     public Sprite[] messageImages;
     public Sprite[] starsImageSprites;
     public ScoreEnding[] scoreEndings;
 
-    public void init()
+    public void init(int playerNumber)
     {
         this.setStatus(false);
         foreach (var scoreEnding in scoreEndings)
         {
             scoreEnding.init();
+        }
+
+        for (int i = 0; i < this.PlayerIcons.Length; i++)
+        {
+            if (this.PlayerIcons[i] != null)
+            {
+                if (i < playerNumber)
+                    this.PlayerIcons[i].SetActive(true);
+                else
+                    this.PlayerIcons[i].SetActive(false);
+            }
         }
     }
     public void setStatus(bool status, bool success = false)
@@ -48,29 +59,7 @@ public class EndGamePage
             this.scoreEndings[_playerId].updateFinalScore(_score, starsImageSprites);
         }
     }
-    public void EndGameScoreEffect(int _playerId)
-    {
-        if (this.scoreEndings != null && this.scoreEndings[_playerId] != null)
-        {
-            var scoreEnding = this.scoreEndings[_playerId];
-            if (scoreEnding.scoreText != null && scoreEnding.totalScore != 0)
-            {
-                scoreEnding.scoreText.GetComponent<TextMeshProUGUI>().color = Color.yellow;
-                int startValue = 0;
-                Debug.Log("Player"+ _playerId +"Score"+scoreEnding.totalScore);
-                DOTween.To(() => startValue, x => startValue = x, scoreEnding.totalScore, 2f)
-                    .OnUpdate(() =>
-                    {
-                        scoreEnding.scoreText.GetComponent<TextMeshProUGUI>().color = Color.yellow;
-                        scoreEnding.scoreText.Text.text = startValue.ToString();
 
-                    }).OnComplete(() =>
-                    {
-                        scoreEnding.scoreText.GetComponent<TextMeshProUGUI>().color = scoreEnding.scoreText.textColor;
-                    }).SetUpdate(true);
-            }
-        }
-    }
 }
 
 
@@ -79,7 +68,6 @@ public class ScoreEnding
 {
     public string name;
     public int starNumber;
-    public int totalScore;
     public NumberCounter scoreText;
     public List<Image> stars_list = new List<Image>();
     public List<Image> show_stars_list = new List<Image>();
@@ -100,19 +88,18 @@ public class ScoreEnding
 
         if (this.scoreText != null)
         {
-            //this.scoreText.Value = score;
-            totalScore = score;
+            this.scoreText.Value = score;
         }
 
-        if (score >= 20 && score <= 40)
+        if (score > 30 && score <= 60)
         {
             this.starNumber = 1;
         }
-        else if (score > 40 && score <= 60)
+        else if (score > 60 && score <= 90)
         {
             this.starNumber = 2;
         }
-        else if (score > 60)
+        else if (score > 90)
         {
             this.starNumber = 3;
         }
@@ -126,7 +113,7 @@ public class ScoreEnding
             if (this.show_stars_list[i] != null)
             {
                 float delay = 1f * i; // Incremental delay of 1 second per star
-                this.show_stars_list[i].transform.DOScale(Vector3.one, 1f).SetDelay(0.5f + delay).SetUpdate(true);
+                this.show_stars_list[i].transform.DOScale(Vector3.one, 1f).SetDelay(0.5f + delay);
             }
         }
     }

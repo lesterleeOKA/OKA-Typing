@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,13 +20,17 @@ public class QuestionList
     public int id;
     public string qid;
     public string question;
-    public string correctAnswer;
     public string questionType;
+    public string[] answers;
+    public string correctAnswer;
+    public int star;
+    public score score;
+    public int correctAnswerIndex;
+    public int maxScore;
+    public learningObjective learningObjective;
+    public string[] media;
     public Texture texture;
     public AudioClip audioClip;
-    public score score;
-    public int star;
-    public learningObjective learningObjective;
 }
 [Serializable]
 public class score
@@ -40,4 +43,13 @@ public class score
 public class learningObjective
 {
 
+}
+
+public enum QuestionType
+{
+    None = 0,
+    Text = 1,
+    Picture = 2,
+    Audio = 3,
+    FillInBlank = 4
 }

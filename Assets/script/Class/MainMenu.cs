@@ -14,18 +14,17 @@ public class MainMenu : MonoBehaviour
     {
         this.audioOnOffPanel.Init(true);
         SetUI.SetMove(this.gameStartPanel, false, new Vector2(0f, this.instructionPanelStartPosY), 0f);
-        //this.MusicOnbutton(false);
     }
 
-    public void MusicOnbutton(bool PlayClick = true)
+    public void MusicOnbutton()
     {
-        this.audioOnOffPanel.set(true, PlayClick);
+        this.audioOnOffPanel.set(true);
         this.audioOnOffPanel.setPanel(false);
         SetUI.SetMove(this.gameStartPanel, true, Vector2.zero, 0.5f);
     }
-    public void MusicOffbutton(bool PlayClick = true)
+    public void MusicOffbutton()
     {
-        this.audioOnOffPanel.set(false, PlayClick);
+        this.audioOnOffPanel.set(false);
         this.audioOnOffPanel.setPanel(false);
         SetUI.SetMove(this.gameStartPanel, true, Vector2.zero, 0.5f);
     }

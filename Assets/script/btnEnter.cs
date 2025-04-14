@@ -43,22 +43,10 @@ public class btnEnter : MonoBehaviour
             /*if (originalWord.ToUpper() == targetText.ToUpper())*/
             if (answer == targetText)
             {
-                score += 1;
-                if(GameManager.Instance.endGamePage != null)
-                {
-                GameManager.Instance.endGamePage.scoreEndings[wordfall.userId].totalScore = this.score;
-               // GameManager.Instance.endGamePage.updateFinalScore(wordfall.userId,this.score);
-                }
-                
-            }
-            else
-            {
-                //Debug.Log("originalWord: " + answer);
-                //Debug.Log("TargetText: " + targetText);
-                //Debug.Log("Wrong answer.");
+                this.score += 1;
             }
 
-            playerScore.text = score.ToString();
+            this.playerScore.text = this.score.ToString();
 
             /*wordfall.SetRandomWord();*/
             wordfall.ExtractRandomWord();

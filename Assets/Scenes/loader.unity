@@ -157,8 +157,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1904277177}
   - {fileID: 4981277201510089853}
+  - {fileID: 1904277177}
   - {fileID: 8282201129081900185}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -301,6 +301,7 @@ MonoBehaviour:
     loadImageMethod: 1
     imageType: 1
     allTextures: []
+    useGCCollect: 1
   loadAudio:
     loadMethod: 1
     loadAudioMethod: 1
@@ -341,14 +342,15 @@ MonoBehaviour:
     loadImageMethod: 1
     imageType: 2
     allTextures: []
+    useGCCollect: 1
     bgTexture: {fileID: 2800000, guid: e0797aae9f58e444da65959a4283a119, type: 3}
     previewTexture: {fileID: 2800000, guid: 4c5622e7194e8d44bae1500e48d92c0a, type: 3}
     gameBackground: {fileID: 0}
     gamePreview: {fileID: 0}
     instructions: {fileID: 0}
-    itemTexture: {fileID: 0}
-    keyboardTextColor: {r: 0.3372549, g: 0.007843138, b: 0.05882353, a: 0}
-    gameTime: 60
+    itemTexture: {fileID: 2800000, guid: ba2160a3d817bad4f8a1ce537c97d6b3, type: 3}
+    keyboardTextColor: {r: 0.3372549, g: 0.007843138, b: 0.05882353, a: 1}
+    gameTime: 120
     showFPS: 0
     playerNumber: 2
   apiManager:
@@ -368,6 +370,7 @@ MonoBehaviour:
       loadImageMethod: 3
       imageType: 2
       allTextures: []
+      useGCCollect: 1
     peopleIcon: {fileID: 0}
     loginName: 
     settings:
@@ -570,7 +573,7 @@ GameObject:
   - component: {fileID: 1904277177}
   - component: {fileID: 1904277178}
   m_Layer: 0
-  m_Name: BGM
+  m_Name: Bgm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1182,7 +1185,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Ver 1.08
+  m_Text: Ver 1.10
 --- !u!114 &3950639863797352758
 MonoBehaviour:
   m_ObjectHideFlags: 0

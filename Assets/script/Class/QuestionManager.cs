@@ -87,12 +87,11 @@ public class QuestionManager : MonoBehaviour
                     LogController.Instance?.debug(questionPath);
                     var json = www.text;
                     this.questionData = JsonUtility.FromJson<QuestionData>(json);
-                    if (string.IsNullOrEmpty(unitKey))
-                    {
-                        unitKey = "test-b";
-                    }
 
-                    this.questionData.questions = this.questionData.questions.Where(q => q.qid != null && q.qid.StartsWith(unitKey)).ToList();
+                    if (!string.IsNullOrEmpty(unitKey))
+                    {
+                        this.questionData.questions = this.questionData.questions.Where(q => q.qid != null && q.qid.StartsWith(unitKey)).ToList();
+                    }
 
                     if (this.questionData.questions[0].questionType == "picture" && this.loadImage.loadImageMethod == LoadImageMethod.AssetsBundle)
                     {
@@ -116,18 +115,15 @@ public class QuestionManager : MonoBehaviour
                     {
                         LogController.Instance?.debug("questionData Path:" + questionPath);
                         var json = uwq.downloadHandler.text;
-                        LogController.Instance?.debug("downloadHandler.text" + json);
                         this.questionData = JsonUtility.FromJson<QuestionData>(json);
-                        if (string.IsNullOrEmpty(unitKey))
+                        if (!string.IsNullOrEmpty(unitKey))
                         {
-                            unitKey = "test-b";
+                            this.questionData.questions = this.questionData.questions.Where(q => q.qid != null && q.qid.StartsWith(unitKey)).ToList();
                         }
-
-                        this.questionData.questions = this.questionData.questions.Where(q => q.qid != null && q.qid.StartsWith(unitKey)).ToList();
-                        //if (this.questionData.questions[0].questionType == "Picture" && this.loadImage.loadImageMethod == LoadImageMethod.AssetsBundle)
-                        //{
-                        //    yield return this.loadImage.loadImageAssetBundleFile(this.questionData.questions[0].qid);
-                        //}
+                        if (this.questionData.questions[0].questionType == "picture" && this.loadImage.loadImageMethod == LoadImageMethod.AssetsBundle)
+                        {
+                            yield return this.loadImage.loadImageAssetBundleFile(this.questionData.questions[0].qid);
+                        }
 
                         //LogController.Instance.debug($"loaded questions: {json}");
                         LogController.Instance?.debug($"loaded filtered questions: {this.questionData.questions.Count}");
@@ -135,6 +131,74 @@ public class QuestionManager : MonoBehaviour
                     }
                 }
                 break;
+        }
+    }
+
+    private void ShuffleQuestions(bool rand = true, Action onComplete = null)
+    {
+        if (rand) this.questionData.questions.Sort((a, b) => UnityEngine.Random.Range(-1, 2));
+        var isLogined = LoaderConfig.Instance.apiManager.IsLogined;
+        this.totalItems = this.questionData.questions.Count;
+        this.loadedItems = 0;
+
+        for (int i = 0; i < this.totalItems; i++)
+        {
+            var qa = this.questionData.questions[i];
+            string folderName = qa.questionType == "fillInBlank" ? "audio" : qa.questionType;
+            string qid = qa.qid;
+            string mediaUrl = qa.media != null && qa.media.Length > 0 ? APIConstant.blobServerRelativePath + qa.media[0] : "";
+
+            switch (qa.questionType)
+            {
+                case "Text":
+                case "text":
+                    ExternalCaller.UpdateLoadBarStatus("Loading Question");
+                    this.loadedItems++;
+                    if (this.loadedItems == this.totalItems) onComplete?.Invoke();
+                    break;
+                case "Picture":
+                case "picture":
+                    ExternalCaller.UpdateLoadBarStatus("Loading Images");
+
+                    if (string.IsNullOrEmpty(qa.correctAnswer) && !string.IsNullOrEmpty(qa.question))
+                        qa.correctAnswer = qa.question;
+                    StartCoroutine(
+                        this.loadImage.Load(
+                            isLogined ? "" : folderName,
+                            isLogined ? mediaUrl : qid,
+                            tex =>
+                            {
+                                qa.texture = tex;
+                                this.loadedItems++;
+                                if (this.loadedItems == this.totalItems) onComplete?.Invoke();
+                            }
+                         )
+                      );
+                    break;
+                case "Audio":
+                case "audio":
+                case "FillInBlank":
+                case "fillInBlank":
+                    ExternalCaller.UpdateLoadBarStatus("Loading Audio");
+                    StartCoroutine(
+                        this.loadAudio.Load(
+                            isLogined ? "" : folderName,
+                            isLogined ? mediaUrl : qid,
+                            audio =>
+                            {
+                                qa.audioClip = audio;
+                                this.loadedItems++;
+                                if (this.loadedItems == this.totalItems) onComplete?.Invoke();
+                            }
+                        )
+                    );
+                    break;
+                default:
+                    LogController.Instance?.debug($"Unexpected QuestionType: {qa.questionType}");
+                    this.loadedItems++;
+                    if (this.loadedItems == this.totalItems) onComplete?.Invoke();
+                    break;
+            }
         }
     }
 
@@ -151,73 +215,10 @@ public class QuestionManager : MonoBehaviour
         }
     }
 
-    private void ShuffleQuestions(bool rand = true, Action onComplete = null)
+    public void ReorderTheQuestionList()
     {
-        if (rand) this.questionData.questions.Sort((a, b) => UnityEngine.Random.Range(-1, 2));
-        var isLogined = LoaderConfig.Instance.apiManager.IsLogined;
-        this.totalItems = this.questionData.questions.Count;
-        this.loadedItems = 0;
-        LoadImage loadQuestionImage  = new();
-        for (int i = 0; i < this.totalItems; i++)
-        {
-            var qa = this.questionData.questions[i];
-            string folderName = qa.questionType;
-            string qid = qa.qid;
-            string mediaUrl;
-            
-
-            switch (qa.questionType)
-            {
-                case "Text":
-                    ExternalCaller.UpdateLoadBarStatus("Loading Question");
-                    this.loadedItems++;
-                    if (this.loadedItems == this.totalItems) onComplete?.Invoke();
-                    break;
-                //case "Picture":
-                //    mediaUrl = "https://oka.blob.core.windows.net/media/"+qa.Media[0] ;
-                //    ExternalCaller.UpdateLoadBarStatus("Loading Images");
-                //    LogController.Instance?.debug("Load:"+"qid:"+qid+"||"+"mediaUrl:"+mediaUrl);
-                    
-                //    loadQuestionImage.loadImageMethod = LoadImageMethod.Url;
-                //    //loadQuestionImage.imageType = ImageType.jpg;
-                    
-                //    StartCoroutine(
-                   
-                //    loadQuestionImage.Load(
-                //           isLogined ? "" : folderName,
-                //           isLogined ? mediaUrl : qid,
-                //           tex =>
-                //           {
-                //               qa.texture = tex;
-                //               this.loadedItems++;
-                //               if (this.loadedItems == this.totalItems) onComplete?.Invoke();
-                //           }
-                //        )
-                //     );
-                //    break;
-                //case "Audio":
-                //    mediaUrl = "https://oka.blob.core.windows.net/media/"+qa.Media[0] ;
-                //    //case "fillInBlank":
-                //    ExternalCaller.UpdateLoadBarStatus("Loading Audio");
-                //    StartCoroutine(
-                //        this.loadAudio.Load(
-                //            isLogined ? "" : folderName,
-                //            isLogined ? mediaUrl : qid,
-                //            audio =>
-                //            {
-                //                qa.audioClip = audio;
-                //                this.loadedItems++;
-                //                if (this.loadedItems == this.totalItems) onComplete?.Invoke();
-                //            }
-                //        )
-                //    );
-                //    break;
-                default:
-                    //LogController.Instance?.debug($"Unexpected QuestionType: {qa.questionType}");
-                    this.loadedItems++;
-                    if (this.loadedItems == this.totalItems) onComplete?.Invoke();
-                    break;
-            }
-        }
+        LogController.Instance?.debug("Re order the questions list!");
+        this.questionData.questions = this.questionData.questions.OrderBy(q => UnityEngine.Random.Range(0f, 1f)).ToList();
     }
+
 }

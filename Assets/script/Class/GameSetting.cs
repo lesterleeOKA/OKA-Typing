@@ -1,8 +1,11 @@
 using System;
 using TMPro;
 using UnityEngine;
+using System.Linq;
+using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Collections;
 
 public class GameSetting : MonoBehaviour
 {
@@ -50,62 +53,68 @@ public class GameSetting : MonoBehaviour
             ExternalCaller.UpdateLoadBarStatus("Loading Bg");
             if (_bgTexture != null) this.gameSetup.bgTexture = _bgTexture;
 
-        }));
-        StartCoroutine(this.gameSetup.Load("GameUI", "preview", _previewTexture =>
+            StartCoroutine(this.gameSetup.Load("GameUI", "preview", _previewTexture =>
             {
                 LogController.Instance?.debug($"Downloaded preview Image!!");
                 ExternalCaller.UpdateLoadBarStatus("Loading Instruction");
                 if (_previewTexture != null) this.gameSetup.previewTexture = _previewTexture;
-
-            }
-
-            ));
-        onCompleted?.Invoke();
+                onCompleted?.Invoke();
+            }));
+        }));
     }
 
     private void initialGameImagesByAPI(Action onCompleted = null)
     {
         //Download game background image from api
         this.gameSetup.loadImageMethod = LoadImageMethod.Url;
-        string backgroundImageUrl = this.apiManager.settings.backgroundImageUrl;
-        string previewGameImageUrl = this.apiManager.settings.previewGameImageUrl;
-        string prefabImageUrl = this.apiManager.settings.prefabItemImageUrl;
-
-        if (!string.IsNullOrEmpty(backgroundImageUrl))
+        var imageUrls = new List<string>
         {
-            StartCoroutine(this.gameSetup.Load("", backgroundImageUrl, _bgTexture =>
+            this.apiManager.settings.backgroundImageUrl,
+            this.apiManager.settings.previewGameImageUrl,
+            this.apiManager.settings.prefabItemImageUrl
+        };
+        imageUrls = imageUrls.Where(url => !string.IsNullOrEmpty(url)).ToList();
+
+        if (imageUrls.Count > 0)
+        {
+            StartCoroutine(LoadImages(imageUrls, onCompleted));
+        }
+        else
+        {
+            LogController.Instance?.debug($"No valid image URLs found!!");
+            onCompleted?.Invoke();
+        }
+    }
+
+    private IEnumerator LoadImages(List<string> imageUrls, Action onCompleted)
+    {
+        foreach (var url in imageUrls)
+        {
+            Texture texture = null;
+            // Load each image
+            yield return StartCoroutine(this.gameSetup.Load("", url, _texture =>
             {
-                LogController.Instance?.debug($"Downloaded bg Image!!");
-                ExternalCaller.UpdateLoadBarStatus("Loading Bg");
-                if (_bgTexture != null) this.gameSetup.bgTexture = _bgTexture;
-
-
+                texture = _texture;
+                LogController.Instance?.debug($"Downloaded image from: {url}");
+                ExternalCaller.UpdateLoadBarStatus($"Loading SetupUI");
             }));
+
+            // Assign textures based on their URL
+            if (url == this.apiManager.settings.backgroundImageUrl)
+            {
+                this.gameSetup.bgTexture = texture != null ? texture : null;
+            }
+            else if (url == this.apiManager.settings.previewGameImageUrl)
+            {
+                this.gameSetup.previewTexture = texture != null ? texture : null;
+            }
+            else if (url == this.apiManager.settings.prefabItemImageUrl)
+            {
+                this.gameSetup.itemTexture = texture != null ? texture : null;
+            }          
         }
 
-        if (!string.IsNullOrEmpty(previewGameImageUrl))
-        {
-            StartCoroutine(this.gameSetup.Load("", previewGameImageUrl, _previewTexture =>
-            {
-                LogController.Instance?.debug($"Downloaded preview Image!!");
-                ExternalCaller.UpdateLoadBarStatus("Loading Instruction");
-                if (_previewTexture != null) this.gameSetup.previewTexture = _previewTexture;
-                onCompleted?.Invoke();
-            }));
-        }
-
-        if (!string.IsNullOrEmpty(prefabImageUrl))
-        {
-            StartCoroutine(this.gameSetup.Load("", prefabImageUrl, _prefabImageUrl =>
-            {
-                LogController.Instance?.debug($"Downloaded preview Image!!");
-                ExternalCaller.UpdateLoadBarStatus("Loading Instruction");
-                if (_prefabImageUrl != null) this.gameSetup.itemTexture = _prefabImageUrl;
-                onCompleted?.Invoke();
-            }));
-        }
-
-        this.gameSetup.keyboardTextColor = this.apiManager.settings.textColor;
+        onCompleted?.Invoke();
     }
 
     public void InitialGameSetup()
@@ -200,64 +209,30 @@ public class GameSetup : LoadImage
         if (!string.IsNullOrEmpty(content) && this.instructions == null)
         {
             var instructionText = GameObject.FindGameObjectWithTag("Instruction");
-
-            if (instructionText != null)
-            {
-                this.instructions = instructionText.GetComponent<InstructionText>();
-                this.instructions.setContent(content);
-            }
+            this.instructions = instructionText != null ? instructionText.GetComponent<InstructionText>() : null;
+            if (instructionText != null) this.instructions.setContent(content);
         }
 
         if (this.gamePreview == null)
         {
             var preview = GameObject.FindGameObjectWithTag("GamePreview");
-            if (LoaderConfig.Instance.apiManager.IsLogined && preview != null)
+
+            if (preview != null)
             {
+                var aspectRatio = preview.GetComponent<AspectRatioFitter>();
                 this.gamePreview = preview.GetComponent<RawImage>();
-                this.gamePreview.texture = this.previewTexture;
+
+                if (this.gamePreview != null) this.gamePreview.texture = this.previewTexture;
+
+                if (aspectRatio != null)
+                {
+                    aspectRatio.aspectMode = AspectRatioFitter.AspectMode.HeightControlsWidth;
+                    aspectRatio.aspectRatio = (float)this.previewTexture.width / this.previewTexture.height;
+                }
             }
         }
     }
-    
-    public void setKeyboard(GameObject obj)
-    {
-        if(this.itemTexture != null)
-        {
-            if(obj.GetComponent<Image>() != null)
-            {
-                Texture2D tex2d = ResizeTexture(this.itemTexture as Texture2D,150,150);
-                Sprite sprite = Sprite.Create(tex2d, new Rect(0, 0, tex2d.width, tex2d.height), new Vector2(0.5f, 0.5f));
-                obj.GetComponent<Image>().sprite = sprite;
-            }
-            
-        }
-        if(obj.GetComponentInChildren<TextMeshProUGUI>() != null)
-        {
-            obj.GetComponentInChildren<TextMeshProUGUI>().color = this.keyboardTextColor;
-        }
-        
-    }
-    private Texture2D ResizeTexture(Texture2D source, int newWidth, int newHeight)
-    {
-        Texture2D newTexture = new Texture2D(newWidth, newHeight, source.format, false);
-        Color[] pixels = source.GetPixels(0, 0, source.width, source.height);
-        Color[] newPixels = new Color[newWidth * newHeight];
-
-        float ratioX = (float)source.width / newWidth;
-        float ratioY = (float)source.height / newHeight;
-
-        for (int y = 0; y < newHeight; y++)
-        {
-            for (int x = 0; x < newWidth; x++)
-            {
-                newPixels[y * newWidth + x] = pixels[(int)(y * ratioY) * source.width + (int)(x * ratioX)];
-            }
-        }
-
-        newTexture.SetPixels(newPixels);
-        newTexture.Apply();
-        return newTexture;
-    }
+   
 }
 
 public enum HostName

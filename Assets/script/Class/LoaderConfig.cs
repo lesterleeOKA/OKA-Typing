@@ -32,7 +32,7 @@ public class LoaderConfig : GameSetting
     {
         this.apiManager.PostGameSetting(this.GetParseURLParams,
                                         ()=> StartCoroutine(this.apiManager.postGameSetting(this.LoadQuestions)), //success action
-                                        this.LoadQuestions // failure action
+                                        this.LoadQuestions
                                         );
     }
 

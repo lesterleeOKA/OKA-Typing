@@ -1,50 +1,67 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
 using DG.Tweening;
-using Unity.VisualScripting;
-using UnityEngine.SocialPlatforms.Impl;
-using UnityEngine.Experimental.AI;
 
 
 public class btnInputLetter : MonoBehaviour
 {
-
-
-
     public wordfall wordfall;
-    //public GameObject correctCount;
-    // public int player_score;
-
-    //public GameObject AddScore;
     public bool isAddScoreAnimationPlayed;
+    public Color keyboardTextColor;
+
+    public void setKeyboard(GameObject obj)
+    {
+        if(obj == null) return;
+        var loader = LoaderConfig.Instance;
+        if (loader.gameSetup.itemTexture != null && loader.apiManager.IsLogined)
+        {
+            var buttonTexture = loader.gameSetup.itemTexture;
+            if (obj.GetComponent<Image>() != null)
+            {
+                Texture2D tex2d = ResizeTexture(buttonTexture as Texture2D, 150, 150);
+                Sprite sprite = Sprite.Create(tex2d, new Rect(0, 0, tex2d.width, tex2d.height), new Vector2(0.5f, 0.5f));
+                obj.GetComponent<Image>().sprite = sprite;
+            }
+
+        }
+        if (obj.GetComponentInChildren<TextMeshProUGUI>() != null && loader.gameSetup.keyboardTextColor != default)
+        {
+            this.keyboardTextColor = loader.gameSetup.keyboardTextColor;
+            obj.GetComponentInChildren<TextMeshProUGUI>().color = this.keyboardTextColor;
+        }
+
+    }
+    private Texture2D ResizeTexture(Texture2D source, int newWidth, int newHeight)
+    {
+        Texture2D newTexture = new Texture2D(newWidth, newHeight, source.format, false);
+        Color[] pixels = source.GetPixels(0, 0, source.width, source.height);
+        Color[] newPixels = new Color[newWidth * newHeight];
+
+        float ratioX = (float)source.width / newWidth;
+        float ratioY = (float)source.height / newHeight;
+
+        for (int y = 0; y < newHeight; y++)
+        {
+            for (int x = 0; x < newWidth; x++)
+            {
+                newPixels[y * newWidth + x] = pixels[(int)(y * ratioY) * source.width + (int)(x * ratioX)];
+            }
+        }
+
+        newTexture.SetPixels(newPixels);
+        newTexture.Apply();
+        return newTexture;
+    }
 
     // public EndGamePage endGamePage;
 
     void Start()
     {
-
-        if (LoaderConfig.Instance != null)
-        {
-
-        }
-        else
-        {
-            Debug.LogWarning("SoundEffectManager not found in the scene.");
-        }
-
-
         this.GetComponent<Button>().onClick.AddListener(ReplaceButtonText);
-        if (LoaderConfig.Instance.apiManager.IsLogined)
-        {
-            LoaderConfig.Instance.gameSetup.setKeyboard(this.gameObject);
-        }
-        
+        this.setKeyboard(this.gameObject);
+       
     }
 
     private void ReplaceButtonText()
@@ -102,7 +119,7 @@ public class btnInputLetter : MonoBehaviour
             WrongAnswer(answer);
 
         }
-        Debug.Log(this.wordfall.correctCount);
+        LogController.Instance.debug("" + this.wordfall.correctCount);
         
         //correctCount.GetComponent<TextMeshProUGUI>().text = this.wordfall.correctCount.ToString();
         wordfall.displayText.GetComponent<TextMeshProUGUI>().DOFade(0, 0.5f).OnComplete(() =>
@@ -118,23 +135,21 @@ public class btnInputLetter : MonoBehaviour
 
         this.wordfall.AddScore(playerAnswer);
 
-        Debug.Log("Correct");
+        LogController.Instance.debug("Correct");
 
         AudioController.Instance.PlayAudio(2);
     }
 
     public void WrongAnswer(string playerAnswer)
     {
-        Debug.Log("Wrong answer.");
-        if (LoaderConfig.Instance.apiManager.IsLogined && wordfall.userId == 0)
+        LogController.Instance.debug("Wrong answer.");
+        if (LoaderConfig.Instance.apiManager.IsLogined && wordfall.UserId == 0)
         {
             QuestionData data = QuestionManager.Instance.questionData;
             float statePrecentage = (data.questions.Count - wordfall.unusedIndices.Count) / data.questions.Count * 100f;
             int progress = (int)statePrecentage;
-            int correctAnswerID = 0;//wrong Answer ID = 0
-
-            float duration = GameManager.Instance.startingTime - GameManager.Instance.currentTime;
-
+            int correctAnswerID = 0;
+            float duration = GameManager.Instance.gameTimer.gameDuration - GameManager.Instance.gameTimer.currentTime;
             this.wordfall.answerTime = duration + this.wordfall.answerTime;
             var seletedItem = this.wordfall.playerData.items[this.wordfall.selectedIndex];
 

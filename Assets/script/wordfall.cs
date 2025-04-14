@@ -1,20 +1,13 @@
 using DG.Tweening;
-using JetBrains.Annotations;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using TMPro;
-using TMPro.Examples;
-using Unity.VisualScripting;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class wordfall : MonoBehaviour
+public class wordfall : UserData
 {
-    public int userId;
     public GameObject playerGameBroad;
 
     public RectTransform playerGameBoardRectTransform;
@@ -57,9 +50,8 @@ public class wordfall : MonoBehaviour
     {
         if (LoaderConfig.Instance.apiManager.IsLogined )
         {
-            if (userId == 0)
+            if (this.UserId == 0)
             {
-
                 playerName.GetComponentInChildren<TextMeshProUGUI>().text = LoaderConfig.Instance.apiManager.loginName;
                 
                 playerIcon.sprite = SetUI.ConvertTextureToSprite(LoaderConfig.Instance.apiManager.peopleIcon as Texture2D);
@@ -85,7 +77,7 @@ public class wordfall : MonoBehaviour
     void Update()
     {
 
-        if (GameManager.Instance.timesup != true && GameManager.Instance.isGameStarted == true)
+        if (GameManager.Instance.timesup != true && GameManager.Instance.playing == true)
         {
 
             rectTransform.anchoredPosition -= new Vector2(0, fallSpeed * Time.deltaTime);
@@ -135,7 +127,7 @@ public class wordfall : MonoBehaviour
 
         if (unusedIndices.Count == 0)
         {
-            if(LoaderConfig.Instance.apiManager.IsLogined && userId == 0)
+            if(LoaderConfig.Instance.apiManager.IsLogined && UserId == 0)
             {
                 GameManager.Instance.EndGame();
             }
@@ -150,7 +142,7 @@ public class wordfall : MonoBehaviour
         }
         if (unusedIndices.Count > 0)
         {
-            if (LoaderConfig.Instance.apiManager.IsLogined && userId== 0)
+            if (LoaderConfig.Instance.apiManager.IsLogined && UserId == 0)
             {
                 GameManager.Instance.progressBar.GetComponentInChildren<NumberCounter>().Unit = "/"+ playerData.items.Count;    
                 
@@ -198,25 +190,31 @@ public class wordfall : MonoBehaviour
         rectTransform.anchoredPosition = new Vector2(randomXPosition, panelTop);
     }
 
+    private int GetCurrentTimePercentage()
+    {
+        var gameTimer = GameManager.Instance.gameTimer;
+        return Mathf.FloorToInt(((gameTimer.gameDuration - gameTimer.currentTime) / gameTimer.gameDuration) * 100);
+    }
+
     public void AddScore(string playerAnswer)
     {
-        int currentScore = int.Parse(playerScoretxt.GetComponent<TextMeshProUGUI>().text);
+        this.Score = int.Parse(playerScoretxt.GetComponent<TextMeshProUGUI>().text);
         correctCount++;
-        int newScore = this.playerData.items[selectedIndex].score + currentScore;
-        GameManager.Instance.endGamePage.scoreEndings[userId].totalScore = newScore;
+        int newScore = this.playerData.items[selectedIndex].score + this.Score;
+        //GameManager.Instance.endGamePage.scoreEndings[UserId].totalScore = newScore;
         //GameManager.Instance.endGamePage.updateFinalScore(userId,newScore);
 
-        DOTween.To(() => currentScore, x => currentScore = x, newScore, 2f).OnUpdate(() =>
+        DOTween.To(() => this.Score, x => this.Score = x, newScore, 2f).OnUpdate(() =>
         {
             playerScoretxt.GetComponent<TextMeshProUGUI>().color = Color.yellow;
-            playerScoretxt.GetComponent<TextMeshProUGUI>().text = currentScore.ToString();
+            playerScoretxt.GetComponent<TextMeshProUGUI>().text = this.Score.ToString();
         }).OnComplete(() =>
         {
             playerScoretxt.GetComponent<TextMeshProUGUI>().color = Color.white;
         });
 
 
-        if (LoaderConfig.Instance.apiManager.IsLogined && userId == 0)
+        if (LoaderConfig.Instance.apiManager.IsLogined && UserId == 0)
         {
 
             QuestionData data = QuestionManager.Instance.questionData;
@@ -224,7 +222,7 @@ public class wordfall : MonoBehaviour
             int progress = (int)statePrecentage;
             int correctAnswerID = 2;
 
-            float duration = GameManager.Instance.startingTime - GameManager.Instance.currentTime;
+            float duration = this.GetCurrentTimePercentage();
 
             answerTime = duration + answerTime;
 

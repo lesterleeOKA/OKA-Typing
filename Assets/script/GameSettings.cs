@@ -24,9 +24,6 @@ public static class SetParams
             {
                 if (!prefabItemUrl.StartsWith("https://") || !prefabItemUrl.StartsWith(APIConstant.blobServerRelativePath))
                     settings.prefabItemImageUrl = APIConstant.blobServerRelativePath + prefabItemUrl;
-
-
-
             }
 
             string hexColor = jsonNode["setting"]["text_color"] != null ?
@@ -36,6 +33,7 @@ public static class SetParams
                 if (ColorUtility.TryParseHtmlString(hexColor, out UnityEngine.Color color))
                 {
                     settings.textColor = color;
+                    LoaderConfig.Instance.gameSetup.keyboardTextColor = settings.textColor;
                 }
             }
         }

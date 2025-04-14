@@ -1,8 +1,7 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 
-public class UserData: MonoBehaviour
+public class UserData : MonoBehaviour
 {
     [SerializeField]
     private string userName;
@@ -18,8 +17,10 @@ public class UserData: MonoBehaviour
     private int correctedAnswerNumber;
     [SerializeField]
     private float correctAnswerPercentage;
-    //[SerializeField]
-    //private float correctAnswerAccuracy;
+    [SerializeField]
+    private int retry = 0;
+    [SerializeField]
+    private int numberOfRetry = 3;
 
     public string UserName
     {
@@ -31,6 +32,11 @@ public class UserData: MonoBehaviour
     {
         get { return this.userId; }
         set { this.userId = value; }
+    }
+
+    public int RealUserId
+    {
+        get { return this.userId + 1; }
     }
 
     public int Score
@@ -53,21 +59,27 @@ public class UserData: MonoBehaviour
 
     public int CorrectedAnswerNumber
     {
-        get{ return this.correctedAnswerNumber;}
+        get { return this.correctedAnswerNumber; }
         set { this.correctedAnswerNumber = value; }
     }
 
-    public float AnsweredPercentage(int totalQuestions=0)
+    public float AnsweredPercentage(int totalQuestions = 0)
     {
         if (totalQuestions == 0) return 0;
         this.correctAnswerPercentage = ((float)this.CorrectedAnswerNumber / totalQuestions) * 100f;
         return this.correctAnswerPercentage;
     }
 
-    /*public float AnsweredAccuracy(int answeredQuestions=0)
+
+    public int Retry
     {
-        if (answeredQuestions == 0) return 0;
-        this.correctAnswerAccuracy = ((float)this.CorrectedAnswerNumber / answeredQuestions) * 100f;
-        return this.correctAnswerAccuracy;
-    }*/
+        get { return this.retry; }
+        set { this.retry = value; }
+    }
+
+    public int NumberOfRetry
+    {
+        get { return this.numberOfRetry; }
+        set { this.numberOfRetry = value; }
+    }
 }

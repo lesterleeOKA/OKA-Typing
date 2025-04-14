@@ -15,10 +15,10 @@ public class AudioOnOff
         SetUI.SetMove(this.musicOnPanel, status, status? Vector2.zero : startPosition, status ? 0.75f : 0f);
     }
 
-    public void set(bool status, bool playClick = true)
+    public void set(bool status)
     {
         AudioController.Instance?.changeBGMStatus(status);
-        if(playClick) AudioController.Instance?.PlayAudio(0);
+        AudioController.Instance?.PlayAudio(0);
     }
 
     public void setPanel(bool status)
