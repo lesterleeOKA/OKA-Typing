@@ -1,0 +1,182 @@
+[
+    {
+        "id": 1,
+        "star": 0,
+        "score": 20,
+        "maxScore": 20,
+        "question": "__assmate",
+        "questionType": "Text",
+        "correctAnswer": "Classmate"
+    },
+    {
+        "id": 2,
+        "star": 0,
+        "score": 20,
+        "maxScore": 20,
+        "question": "G__db__",
+        "questionType": "Text",
+        "correctAnswer": "Goodbye"
+    },
+    {
+        "id": 3,
+        "star": 0,
+        "score": 20,
+        "maxScore": 20,
+        "question": "G__d morn___",
+        "questionType": "Text",
+        "correctAnswer": "Good morning"
+    },
+    {
+        "id": 4,
+        "star": 0,
+        "score": 20,
+        "maxScore": 20,
+        "question": "Good after____",
+        "questionType": "Text",
+        "correctAnswer": "Good afternoon"
+    },
+    {
+        "id": 5,
+        "star": 0,
+        "score": 20,
+        "maxScore": 20,
+        "question": "Gr__t",
+        "questionType": "Text",
+        "correctAnswer": "Greet"
+    },
+    {
+        "id": 6,
+        "star": 0,
+        "score": 20,
+        "maxScore": 20,
+        "question": "H__lo",
+        "questionType": "Text",
+        "correctAnswer": "Hello"
+    },
+    {
+        "id": 7,
+        "star": 0,
+        "score": 20,
+        "maxScore": 20,
+        "question": "M__itor",
+        "questionType": "Text",
+        "correctAnswer": "Monitor"
+    },
+    {
+        "id": 8,
+        "star": 0,
+        "score": 20,
+        "maxScore": 20,
+        "question": "Te__h_r",
+        "questionType": "Text",
+        "correctAnswer": "Teacher"
+    },
+    {
+        "id": 9,
+        "star": 0,
+        "score": 20,
+        "maxScore": 20,
+        "question": "Fri__d",
+        "questionType": "Text",
+        "correctAnswer": "Friend"
+    },
+    {
+        "id": 10,
+        "star": 0,
+        "score": 20,
+        "maxScore": 20,
+        "question": "G_rd_ner",
+        "questionType": "Text",
+        "correctAnswer": "Gardener"
+    },
+    {
+        "id": 11,
+        "star": 0,
+        "score": 20,
+        "maxScore": 20,
+        "question": "Driv__",
+        "questionType": "Text",
+        "correctAnswer": "Driver"
+    },
+    {
+        "id": 12,
+        "star": 0,
+        "score": 20,
+        "maxScore": 20,
+        "question": "C_a_h",
+        "questionType": "Text",
+        "correctAnswer": "Coach"
+    },
+    {
+        "id": 13,
+        "star": 0,
+        "score": 20,
+        "maxScore": 20,
+        "question": "L__der",
+        "questionType": "Text",
+        "correctAnswer": "Leader"
+    },
+    {
+        "id": 14,
+        "star": 0,
+        "score": 20,
+        "maxScore": 20,
+        "question": "Li___ri_n",
+        "questionType": "Text",
+        "correctAnswer": "Librarian"
+    },
+    {
+        "id": 15,
+        "star": 0,
+        "score": 20,
+        "maxScore": 20,
+        "question": "Engl___",
+        "questionType": "Text",
+        "correctAnswer": "English"
+    },
+    {
+        "id": 16,
+        "star": 0,
+        "score": 20,
+        "maxScore": 20,
+        "question": "Chin__e",
+        "questionType": "Text",
+        "correctAnswer": "Chinese"
+    },
+    {
+        "id": 17,
+        "star": 0,
+        "score": 20,
+        "maxScore": 20,
+        "question": "Ja_it__",
+        "questionType": "Text",
+        "correctAnswer": "Janitor"
+    },
+    {
+        "id": 18,
+        "star": 0,
+        "score": 20,
+        "maxScore": 20,
+        "question": "Stud__t",
+        "questionType": "Text",
+        "correctAnswer": "Student"
+    },
+    {
+        "id": 19,
+        "star": 0,
+        "score": 20,
+        "maxScore": 20,
+        "question": "Pre___t",
+        "questionType": "Text",
+        "correctAnswer": "Prefect"
+    },
+    {
+        "id": 20,
+        "star": 0,
+        "score": 20,
+        "maxScore": 20,
+        "question": "Pr__cip__",
+        "questionType": "Text",
+        "correctAnswer": "Principal"
+    }
+]
