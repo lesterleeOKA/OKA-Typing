@@ -119,7 +119,7 @@ public class btnInputLetter : MonoBehaviour
             WrongAnswer(answer);
 
         }
-        LogController.Instance.debug("" + this.wordfall.correctCount);
+        LogController.Instance.debug("" + this.wordfall.CorrectedAnswerNumber);
         
         //correctCount.GetComponent<TextMeshProUGUI>().text = this.wordfall.correctCount.ToString();
         wordfall.displayText.GetComponent<TextMeshProUGUI>().DOFade(0, 0.5f).OnComplete(() =>
@@ -150,22 +150,22 @@ public class btnInputLetter : MonoBehaviour
             int progress = (int)statePrecentage;
             int correctAnswerID = 0;
             float duration = GameManager.Instance.gameTimer.gameDuration - GameManager.Instance.gameTimer.currentTime;
-            this.wordfall.answerTime = duration + this.wordfall.answerTime;
-            var seletedItem = this.wordfall.playerData.items[this.wordfall.selectedIndex];
+            this.wordfall.AnswerTime = duration + this.wordfall.AnswerTime;
+            var seletedItem = this.wordfall.playerData.items[this.wordfall.selectedQAIndex];
 
             LoaderConfig.Instance.SubmitAnswer(
             Mathf.RoundToInt(duration),
-            this.wordfall.correctCount,
+            this.wordfall.Score,
             statePrecentage,
             progress,
             correctAnswerID,
-            this.wordfall.answerTime,
+            this.wordfall.AnswerTime,
             seletedItem.qid,
             seletedItem.qNum,
             playerAnswer,
             seletedItem.answer,
             0,
-            this.wordfall.correctCount / this.wordfall.playerData.items.Count
+            0f
             );
         }
         AudioController.Instance.PlayAudio(1);

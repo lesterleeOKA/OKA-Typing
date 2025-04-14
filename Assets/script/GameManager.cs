@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
-using DG.Tweening;
 
 
 public class GameManager : GameBaseController
@@ -9,10 +8,7 @@ public class GameManager : GameBaseController
     public static GameManager Instance = null;
     public QuestionData questionData;
     public bool timesup = false;
-    public GameObject endGameObject;
     public List<wordfall> playerControllers;
-    public GameObject playerEndGameTxt0;
-    public GameObject playerEndGameTxt1;
     public GameObject progressBar;
     public Image progressBarImage;
 
@@ -39,7 +35,6 @@ public class GameManager : GameBaseController
     public void EndGame()
     {
         this.timesup = true;
-        Time.timeScale = 0f;
         bool showSuccess = false;
         for (int i = 0; i < this.playerControllers.Count; i++)
         {
@@ -52,6 +47,7 @@ public class GameManager : GameBaseController
                     {
                         showSuccess = true;
                     }
+                    Debug.Log("Player " + i + " final score: " + playerController.Score);
                     this.endGamePage.updateFinalScore(i, playerController.Score);
                 }
             }
@@ -62,7 +58,6 @@ public class GameManager : GameBaseController
 
     public override void enterGame()
     {
-        Time.timeScale = 1f;
         base.enterGame();
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Linq;
 using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
@@ -14,38 +13,38 @@ public class btnReset : MonoBehaviour
 
     void Start()
     {
-        /*button.onClick.AddListener(BtnReset);*/
-        button.onClick.AddListener(BtnBackSpace);
+        this.button.onClick.AddListener(BtnBackSpace);
     }
 
     public void BtnReset()
     {
-        wordfall.targetText.text = wordfall.hiddenWord;
-        textMeshProUGUI.text = "";
+        this.wordfall.targetText.text = wordfall.hiddenWord;
+        this.textMeshProUGUI.text = "";
     }
 
     public void BtnBackSpace()
     {
         string Question = wordfall.randomQuestion;
         
-        string Answer = Regex.Replace(wordfall.targetText.text, @"<color=.*?>|</color>", "");
+        string Answer = Regex.Replace(this.wordfall.targetText.text, @"<color=.*?>|</color>", "");
         if (string.IsNullOrEmpty(Question) || string.IsNullOrEmpty(Answer))
         {
-            Debug.LogWarning("Question or Answer is null or empty.");
+            LogController.Instance.debug("Question or Answer is null or empty.");
             return;
         }
 
         if (Question.Length != Answer.Length)
         {
-            Debug.LogWarning("Question and Answer lengths do not match.");
-            Debug.Log(Question+"////"+ Answer);
+            LogController.Instance.debug("Question and Answer lengths do not match: " + Question + "////" + Answer);
             return;
         }
 
+        int underscoreCountInQuestion = Question.Count(ch => ch == '_');
+        int currentUnderscoreCount = Answer.Count(ch => ch == '_');
         // 找到玩家答案中的第一個下劃線的位置
         int firstUnderscoreIndex = Answer.IndexOf('_');
 
-        if (firstUnderscoreIndex != -1)
+        if (firstUnderscoreIndex != -1 && currentUnderscoreCount < underscoreCountInQuestion)
         {
             // 從後向前遍歷答案，找到最後一個與問題中對應位置不同的字符
             for (int i = Answer.Length - 1; i >= 0; i--)
@@ -58,22 +57,19 @@ public class btnReset : MonoBehaviour
 
                 if (Answer[i] != Question[i])
                 {
-                    // 將這個字符替換為問題中的下劃線
                     Answer = Answer.Substring(0, i) + Question[i] + Answer.Substring(i + 1);
                     break;
                 }
             }
 
             string replacementText = Answer;
-
-            // 更新 UI 元素
-            wordfall.playerAnswer = replacementText;
-            wordfall.targetText.text = replacementText;
-            textMeshProUGUI.text = replacementText;
+            this.wordfall.playerAnswer = replacementText;
+            this.wordfall.targetText.text = replacementText;
+            this.textMeshProUGUI.text = replacementText;
         }
         else
         {
-            Debug.LogWarning("No underscore found in the Answer.");
+            LogController.Instance.debug("No underscore found in the Answer.");
         }
     }
 }
