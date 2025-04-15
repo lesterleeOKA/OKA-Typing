@@ -1,71 +1,88 @@
-using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class wordfall : UserData
 {
-    public GameObject playerGameBroad;
-    public RectTransform playerGameBoardRectTransform;
+    public CharacterSet characterSet;
+    public Scoring scoring;
+    public RectTransform playerGameBroad;
+    private RectTransform rectTransform;
     public float fallSpeed = 50f;
     public int missingLetterCount = 0;
     public TextMeshProUGUI targetText;
     public TextMeshProUGUI displayText;
     public string hiddenWord;
-    private RectTransform rectTransform;
     private randomTextBtn randomTextBtn;
     public string originalWord;
     public string playerAnswer;
     public int selectedQAIndex;
 
-    public GameObject playerScoretxt;
-
     [SerializeField] public List<int> unusedIndices;
     public PlayerData playerData = new PlayerData { items = new List<playerQuestions>() };
-    public GameObject playerName;
-    public Image playerIcon;
     public string randomQuestion;
     public string randomAnswer;
     public string targetLetters;
-    void Awake()
+
+    public void Init(CharacterSet characterSet = null)
     {
-        GetQuestionAnswer();
-    }
-    void Start()
-    {
-        if (LoaderConfig.Instance.apiManager.IsLogined )
+        this.GetQuestionAnswer();
+        this.characterSet = characterSet;
+        LogController.Instance.debug("Get all questions");
+
+        if (this.PlayerIcons[0] == null)
+        {
+            this.PlayerIcons[0] = GameObject.FindGameObjectWithTag("P" + this.RealUserId + "_Icon").GetComponent<PlayerIcon>();
+        }
+
+        if (this.scoring.scoreTxt == null)
+        {
+            this.scoring.scoreTxt = GameObject.FindGameObjectWithTag("P" + this.RealUserId + "_Score").GetComponent<TextMeshProUGUI>();
+        }
+        this.scoring.init();
+
+        /*if (LoaderConfig.Instance.apiManager.IsLogined)
         {
             if (this.UserId == 0)
             {
-                playerName.GetComponentInChildren<TextMeshProUGUI>().text = LoaderConfig.Instance.apiManager.loginName;           
-                playerIcon.sprite = SetUI.ConvertTextureToSprite(LoaderConfig.Instance.apiManager.peopleIcon as Texture2D);          
+                this.playerName.GetComponentInChildren<TextMeshProUGUI>().text = LoaderConfig.Instance.apiManager.loginName;
+                this.playerIcon.sprite = SetUI.ConvertTextureToSprite(LoaderConfig.Instance.apiManager.peopleIcon as Texture2D);
             }
         }
         else
         {
-            playerName.GetComponent<CanvasGroup>().alpha = 0f;
+            this.playerName.GetComponent<CanvasGroup>().alpha = 0f;
+        }*/
+
+        this.rectTransform = this.targetText.GetComponent<RectTransform>();
+        this.randomTextBtn = GetComponent<randomTextBtn>();
+
+        this.unusedIndices = Enumerable.Range(0, this.playerData.items.Count).ToList();
+        this.ExtractRandomWord();
+    }
+
+    public void updatePlayerIcon(bool _status = false, string _playerName = "", Sprite _icon = null)
+    {
+        for (int i = 0; i < this.PlayerIcons.Length; i++)
+        {
+            if (this.PlayerIcons[i] != null)
+            {
+                this.PlayerColor = this.characterSet.playerColor;
+                this.PlayerIcons[i].playerColor = this.characterSet.playerColor;
+                this.PlayerIcons[i].SetStatus(_status, _playerName, _icon);
+            }
         }
-
-        rectTransform = targetText.GetComponent<RectTransform>();
-
-        playerGameBoardRectTransform = playerGameBroad.GetComponent<RectTransform>();
-        randomTextBtn = GetComponent<randomTextBtn>();
-
-        unusedIndices = Enumerable.Range(0, playerData.items.Count).ToList();
-        ExtractRandomWord();
     }
 
     // Update is called once per frame
     void Update()
     {
-
-        if (GameManager.Instance.timesup != true && GameManager.Instance.playing == true)
+        if (GameController.Instance.playing)
         {
-            rectTransform.anchoredPosition -= new Vector2(0, fallSpeed * Time.deltaTime);
-            if (rectTransform.anchoredPosition.y < -playerGameBoardRectTransform.rect.yMax)
+            this.rectTransform.anchoredPosition -= new Vector2(0, fallSpeed * Time.deltaTime);
+            if (rectTransform.anchoredPosition.y < -this.playerGameBroad.rect.yMax)
             {
                 AudioController.Instance.PlayAudio(0);
                 ExtractRandomWord();
@@ -80,13 +97,13 @@ public class wordfall : UserData
         {
             foreach (var questions in QuestionManager.Instance.questionData.questions)
             {
-                playerData.items.Add(new playerQuestions
+                this.playerData.items.Add(new playerQuestions
                 {
                     qNum = questions.id,
                     qid = questions.qid,
                     question = questions.question,
                     answer = questions.correctAnswer,
-                    score = questions.score.full,
+                    score = questions.score.full == 0 ? 10 : questions.score.full,
                 });
             }
         }
@@ -103,28 +120,25 @@ public class wordfall : UserData
         {
             if(LoaderConfig.Instance.apiManager.IsLogined && UserId == 0)
             {
-                GameManager.Instance.EndGame();
+                GameController.Instance.EndGame();
             }
             else
             {
-                // Refill the list when all indices have been used
-            this.unusedIndices = Enumerable.Range(0, playerData.items.Count).ToList();
-            LogController.Instance?.debug("Refill the list when all indices have been used");
-            }
-
-            
+                this.unusedIndices = Enumerable.Range(0, playerData.items.Count).ToList();
+                LogController.Instance?.debug("Refill the list when all indices have been used");
+            }           
         }
         if (this.unusedIndices.Count > 0)
         {
             if (LoaderConfig.Instance.apiManager.IsLogined && UserId == 0)
             {
-                GameManager.Instance.progressBar.GetComponentInChildren<NumberCounter>().Unit = "/"+ playerData.items.Count;    
+                GameController.Instance.progressBar.GetComponentInChildren<NumberCounter>().Unit = "/"+ playerData.items.Count;    
                 
                 float progress = playerData.items.Count- this.unusedIndices.Count;
-                GameManager.Instance.progressBar.GetComponentInChildren<NumberCounter>().Value = (int)progress;
+                GameController.Instance.progressBar.GetComponentInChildren<NumberCounter>().Value = (int)progress;
                 if (progress != 0)
                 {
-                    GameManager.Instance.progressBarImage.fillAmount = progress/playerData.items.Count;
+                    GameController.Instance.progressBarImage.fillAmount = progress/playerData.items.Count;
                 }
                 
             }
@@ -138,7 +152,7 @@ public class wordfall : UserData
             randomAnswer = playerData.items[this.selectedQAIndex].answer;
 
             this.unusedIndices.RemoveAt(randomIndex);
-            targetLetters = "";
+            this.targetLetters = "";
             int minLength = Mathf.Min(randomQuestion.Length, randomAnswer.Length);
             for (int i = 0; i < minLength; i++)
             {
@@ -153,40 +167,37 @@ public class wordfall : UserData
             LogController.Instance?.debug($"Random Question: {randomQuestion}//");
             LogController.Instance?.debug($"Corresponding Answer: {randomAnswer}//");
             LogController.Instance?.debug($"Target Letters: {targetLetters} //");
-            targetText.text = randomQuestion;
+            this.targetText.text = randomQuestion;
         }
 
 
         float textWidth = rectTransform.sizeDelta.x;
-        float randomXPosition = UnityEngine.Random.Range(playerGameBoardRectTransform.rect.xMin + textWidth / 2, playerGameBoardRectTransform.rect.xMax - textWidth / 2);
-        float panelTop = playerGameBoardRectTransform.rect.yMax + 100f;
+        float randomXPosition = UnityEngine.Random.Range(this.playerGameBroad.rect.xMin + textWidth / 2, this.playerGameBroad.rect.xMax - textWidth / 2);
+        float panelTop = this.playerGameBroad.rect.yMax + 100f;
 
-        rectTransform.anchoredPosition = new Vector2(randomXPosition, panelTop);
+        this.rectTransform.anchoredPosition = new Vector2(randomXPosition, panelTop);
     }
 
     private int GetCurrentTimePercentage()
     {
-        var gameTimer = GameManager.Instance.gameTimer;
+        var gameTimer = GameController.Instance.gameTimer;
         return Mathf.FloorToInt(((gameTimer.gameDuration - gameTimer.currentTime) / gameTimer.gameDuration) * 100);
     }
 
     public void AddScore(string playerAnswer)
     {
-        this.Score = int.Parse(playerScoretxt.GetComponent<TextMeshProUGUI>().text);
-        this.CorrectedAnswerNumber++;
-        int newScore = this.playerData.items[this.selectedQAIndex].score + this.Score;
-        DOTween.To(() => this.Score, x => this.Score = x, newScore, 2f).OnUpdate(() =>
-        {
-            playerScoretxt.GetComponent<TextMeshProUGUI>().color = Color.yellow;
-            playerScoretxt.GetComponent<TextMeshProUGUI>().text = this.Score.ToString();
-        }).OnComplete(() =>
-        {
-            playerScoretxt.GetComponent<TextMeshProUGUI>().color = Color.white;
-        });
+        var loader = LoaderConfig.Instance;
+        int eachQAScore = this.playerData.items[this.selectedQAIndex].score;
+        string correctAnswer = this.playerData.items[this.selectedQAIndex].answer;
+        int currentScore = this.Score;
+        int resultScore = this.scoring.score(playerAnswer, currentScore, correctAnswer, eachQAScore);
+        this.Score = resultScore;
 
-
-        if (LoaderConfig.Instance.apiManager.IsLogined && UserId == 0)
+        if (this.UserId == 0 && loader != null && loader.apiManager.IsLogined)
         {
+            if (this.CorrectedAnswerNumber < QuestionManager.Instance.totalItems)
+                this.CorrectedAnswerNumber += 1;
+
             QuestionData data = QuestionManager.Instance.questionData;
             float statePrecentage = (data.questions.Count - unusedIndices.Count) / data.questions.Count * 100f;
             int progress = (int)statePrecentage;
@@ -206,8 +217,8 @@ public class wordfall : UserData
             playerData.items[this.selectedQAIndex].qid,
             playerData.items[this.selectedQAIndex].qNum,
             playerAnswer,
-            playerData.items[this.selectedQAIndex].answer,
-            playerData.items[this.selectedQAIndex].score,
+            correctAnswer,
+            eachQAScore,
             100f
             );
         }

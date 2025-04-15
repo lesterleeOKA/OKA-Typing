@@ -149,7 +149,7 @@ public class btnInputLetter : MonoBehaviour
             float statePrecentage = (data.questions.Count - wordfall.unusedIndices.Count) / data.questions.Count * 100f;
             int progress = (int)statePrecentage;
             int correctAnswerID = 0;
-            float duration = GameManager.Instance.gameTimer.gameDuration - GameManager.Instance.gameTimer.currentTime;
+            float duration = GameController.Instance.gameTimer.gameDuration - GameController.Instance.gameTimer.currentTime;
             this.wordfall.AnswerTime = duration + this.wordfall.AnswerTime;
             var seletedItem = this.wordfall.playerData.items[this.wordfall.selectedQAIndex];
 

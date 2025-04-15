@@ -7,6 +7,10 @@ TagManager:
   - GameBackground
   - GamePreview
   - Instruction
+  - P1_Icon
+  - P2_Icon
+  - P1_Score
+  - P2_Score
   layers:
   - Default
   - TransparentFX

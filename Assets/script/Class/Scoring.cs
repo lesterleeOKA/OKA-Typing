@@ -16,11 +16,16 @@ public class Scoring
         if (this.scoreTxt != null) this.scoreTxt.text = "0";
         if (this.scoringTxt != null) this.scoreTxt.text = "0";
         if (this.answeredEffectTxt != null) this.answeredEffectTxt.text = "0";
-        if (this.resultScoreTxt != null) { 
+        if (this.resultScoreTxt != null)
+        {
             this.scoreTxt.text = "0";
         }
     }
 
+    public void resetText()
+    {
+        if (this.answeredEffectTxt != null) this.answeredEffectTxt.text = "0";
+    }
 
     public int score(string _answer, int _playerScore, string _correctAnswer, int eachMarkOfQA = 10)
     {
@@ -62,7 +67,18 @@ public class Scoring
             }
 
             //this.scoreTxt.text = _playerScore.ToString();
-            if (this.scoreTxt != null) this.scoreTxt.GetComponent<NumberCounter>().Value = _playerScore;
+            if (this.scoreTxt != null)
+            {
+                var numberCounter = this.scoreTxt.GetComponent<NumberCounter>();
+                if (numberCounter != null)
+                {
+                    this.scoreTxt.GetComponent<NumberCounter>().Value = _playerScore;
+                }
+                else
+                {
+                    this.scoreTxt.text = _playerScore.ToString();
+                }
+            }
             //this.resultScoreTxt.text = _playerScore.ToString();
 
             _score = _playerScore;

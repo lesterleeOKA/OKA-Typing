@@ -32,31 +32,40 @@ public class PlayerIcon : MonoBehaviour
         set { this.playerNos = value; }
     }
 
+    public void HiddenIcon()
+    {
+        for (int i = 0; i < this.PlayerIcons.Length; i++)
+        {
+            if (this.PlayerIcons[i] != null)
+            {
+                this.PlayerIcons[i].sprite = null;
+            }
+        }
+    }
+
     public void SetStatus(bool _status = false, string _playerName = "", Sprite _icon = null)
     {
         this.gameObject.SetActive(_status);
-        if(_status) { 
+        for (int i = 0; i < this.PlayerIcons.Length; i++)
+        {
+            if (this.PlayerIcons[i] != null && _icon != null)
+            {
+                this.PlayerIcons[i].sprite = _icon;
+            }
+        }
+        if (_status) { 
             for (int i = 0; i < this.PlayerNames.Length; i++)
             {
                 if (this.PlayerNames[i] != null && this.PlayerNameBoxes[i] != null) {
 
+                    SetUI.Set(this.PlayerNameBoxes[i], true, 0f);
+                    if (this.PlayerNameBoxes[i].GetComponent<Image>() != null)
+                        this.PlayerNameBoxes[i].GetComponent<Image>().color = this.playerColor;
+
                     if (!string.IsNullOrEmpty(_playerName))
                     {
-                        SetUI.Set(this.PlayerNameBoxes[i], true, 0f);
                         this.PlayerNames[i].text = _playerName;
                     }
-                    else
-                    {
-                        SetUI.Set(this.PlayerNameBoxes[i], false, 0f);
-                    }
-                }
-            }
-
-            for (int i = 0; i < this.PlayerIcons.Length; i++)
-            {
-                if (this.PlayerIcons[i] != null && _icon != null)
-                {
-                    this.PlayerIcons[i].sprite = _icon;
                 }
             }
         }
@@ -65,7 +74,7 @@ public class PlayerIcon : MonoBehaviour
         {
             if (this.PlayerNos[i] != null)
             {
-                this.PlayerNos[i].color = playerColor;
+                this.PlayerNos[i].color = this.playerColor;
             }
         }
     }
