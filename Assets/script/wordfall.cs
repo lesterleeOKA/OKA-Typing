@@ -8,6 +8,7 @@ public class wordfall : UserData
 {
     public CharacterSet characterSet;
     public Scoring scoring;
+    public CanvasGroup playerGameBroadCanvas;
     public RectTransform playerGameBroad;
     private RectTransform rectTransform;
     public float fallSpeed = 50f;
@@ -28,6 +29,7 @@ public class wordfall : UserData
 
     public void Init(CharacterSet characterSet = null)
     {
+        this.fallSpeed = LoaderConfig.Instance ? LoaderConfig.Instance.gameSetup.wordFallingSpeed : this.fallSpeed;
         this.GetQuestionAnswer();
         this.characterSet = characterSet;
         LogController.Instance.debug("Get all questions");
@@ -41,21 +43,13 @@ public class wordfall : UserData
         {
             this.scoring.scoreTxt = GameObject.FindGameObjectWithTag("P" + this.RealUserId + "_Score").GetComponent<TextMeshProUGUI>();
         }
-        this.scoring.init();
 
-        /*if (LoaderConfig.Instance.apiManager.IsLogined)
+        if (this.playerGameBroadCanvas == null)
         {
-            if (this.UserId == 0)
-            {
-                this.playerName.GetComponentInChildren<TextMeshProUGUI>().text = LoaderConfig.Instance.apiManager.loginName;
-                this.playerIcon.sprite = SetUI.ConvertTextureToSprite(LoaderConfig.Instance.apiManager.peopleIcon as Texture2D);
-            }
+            this.playerGameBroadCanvas = GameObject.FindGameObjectWithTag("P" + this.RealUserId + "-controller").GetComponent<CanvasGroup>();
         }
-        else
-        {
-            this.playerName.GetComponent<CanvasGroup>().alpha = 0f;
-        }*/
 
+        this.scoring.init();
         this.rectTransform = this.targetText.GetComponent<RectTransform>();
         this.randomTextBtn = GetComponent<randomTextBtn>();
 
@@ -79,9 +73,9 @@ public class wordfall : UserData
     // Update is called once per frame
     void Update()
     {
-        if (GameController.Instance.playing)
+        if (GameController.Instance.playing && this.gameObject.activeInHierarchy)
         {
-            this.rectTransform.anchoredPosition -= new Vector2(0, fallSpeed * Time.deltaTime);
+            this.rectTransform.anchoredPosition -= new Vector2(0, this.fallSpeed * Time.deltaTime);
             if (rectTransform.anchoredPosition.y < -this.playerGameBroad.rect.yMax)
             {
                 AudioController.Instance.PlayAudio(0);

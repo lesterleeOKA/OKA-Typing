@@ -353,6 +353,7 @@ MonoBehaviour:
     gameTime: 180
     showFPS: 0
     playerNumber: 2
+    wordFallingSpeed: 80
   apiManager:
     jwt: 
     appId: 

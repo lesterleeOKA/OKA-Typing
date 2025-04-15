@@ -11,6 +11,8 @@ TagManager:
   - P2_Icon
   - P1_Score
   - P2_Score
+  - P1-controller
+  - P2-controller
   layers:
   - Default
   - TransparentFX

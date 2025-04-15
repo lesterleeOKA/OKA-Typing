@@ -102,6 +102,11 @@ public class GameController : GameBaseController
                     }
                     //notUsedPlayerIcon.SetActive(false);
                 }
+                if (this.playerControllers[i] != null) {
+                    SetUI.Set(this.playerControllers[i].playerGameBroadCanvas, false);
+                    this.playerControllers[i].gameObject.SetActive(false);
+                }
+
             }
         }
     }

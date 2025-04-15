@@ -34,6 +34,7 @@ public class PlayerIcon : MonoBehaviour
 
     public void HiddenIcon()
     {
+        SetUI.Set(this.gameObject.GetComponent<CanvasGroup>(), false, 0f);
         for (int i = 0; i < this.PlayerIcons.Length; i++)
         {
             if (this.PlayerIcons[i] != null)
