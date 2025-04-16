@@ -2840,6 +2840,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerScores
       objectReference: {fileID: 0}
+    - target: {fileID: 1924677638111557394, guid: 327f124e2bd7112499ce3ae6029e65c0, type: 3}
+      propertyPath: m_Alpha
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1998527767000306883, guid: 327f124e2bd7112499ce3ae6029e65c0, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -2963,11 +2967,15 @@ PrefabInstance:
     - target: {fileID: 3960229248118228341, guid: 327f124e2bd7112499ce3ae6029e65c0, type: 3}
       propertyPath: m_fontAsset
       value: 
-      objectReference: {fileID: 11400000, guid: d768e21302500c94a9e576d346f7bd3f, type: 2}
+      objectReference: {fileID: 11400000, guid: e0fe88cee79ade046aa5748854f6ea0c, type: 2}
     - target: {fileID: 3960229248118228341, guid: 327f124e2bd7112499ce3ae6029e65c0, type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: -6675402593192099885, guid: d768e21302500c94a9e576d346f7bd3f, type: 2}
+      objectReference: {fileID: 8939603703621179125, guid: e0fe88cee79ade046aa5748854f6ea0c, type: 2}
+    - target: {fileID: 3960229248118228341, guid: 327f124e2bd7112499ce3ae6029e65c0, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3970828814964370231, guid: 327f124e2bd7112499ce3ae6029e65c0, type: 3}
       propertyPath: m_fontAsset
       value: 
@@ -3139,11 +3147,15 @@ PrefabInstance:
     - target: {fileID: 7545726141492546908, guid: 327f124e2bd7112499ce3ae6029e65c0, type: 3}
       propertyPath: m_fontAsset
       value: 
-      objectReference: {fileID: 11400000, guid: d768e21302500c94a9e576d346f7bd3f, type: 2}
+      objectReference: {fileID: 11400000, guid: e0fe88cee79ade046aa5748854f6ea0c, type: 2}
     - target: {fileID: 7545726141492546908, guid: 327f124e2bd7112499ce3ae6029e65c0, type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: -6675402593192099885, guid: d768e21302500c94a9e576d346f7bd3f, type: 2}
+      objectReference: {fileID: 8939603703621179125, guid: e0fe88cee79ade046aa5748854f6ea0c, type: 2}
+    - target: {fileID: 7545726141492546908, guid: 327f124e2bd7112499ce3ae6029e65c0, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8103829577724709549, guid: 327f124e2bd7112499ce3ae6029e65c0, type: 3}
       propertyPath: textColor.a
       value: 1
